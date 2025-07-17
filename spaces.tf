@@ -6,16 +6,6 @@ module "spaces" {
     acl           = "private"
     force_destroy = false
     region        = var.care_bucket_region
-
-    # cors_rule = [
-    #     {
-    #         allowed_headers = ["*"],
-    #         allowed_methods = ["GET", "POST", "PUT", "DELETE"],
-    #         allowed_origins = ["https://example.com"],
-    #         expose_headers  = []
-    #         max_age_seconds = 3600
-    #     }
-    # ]
 }
 
 resource "digitalocean_spaces_bucket_cors_configuration" "test" {

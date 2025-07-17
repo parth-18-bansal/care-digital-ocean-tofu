@@ -9,8 +9,10 @@ export TF_VAR_spaces_secret_key="your-secret-key"
 
 Third, install OpenTofu, a tool for managing infrastructure as code. To do this, visit the official OpenTofu installation page and follow the instructions for your operating system: OpenTofu Installation Guide.
 
-After installing OpenTofu, manually create a Space bucket with name.
+After installing OpenTofu, manually create a Space bucket with name care-tofu-state.
 
 export AWS_ACCESS_KEY_ID="your-spaces-access-key"
 export AWS_SECRET_ACCESS_KEY="your-spaces-secret-key"
+
+Then run the make
 
