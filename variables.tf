@@ -1,10 +1,4 @@
 # provider
-variable "do_token" {
-    type = string
-    description = "DigitalOcean API token"
-    sensitive   = true
-}
-
 variable "spaces_access_key" {
     description = "value"
     type = string

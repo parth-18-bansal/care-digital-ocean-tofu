@@ -3,6 +3,10 @@ resource "digitalocean_app" "frontend_app" {
     name   = var.care_frontend_app_name
     region = var.care_frontend_app_region
 
+    # domain {
+    #   name = "care.example.com"
+    # }
+
     dynamic "env" {
         for_each = local.frontend_env_vars
         content {
@@ -22,6 +26,8 @@ resource "digitalocean_app" "frontend_app" {
         deploy_on_push = true
         repo           = var.care_frontend_app_github_repo
       }
+
+      error_document = "index.html"
     } 
   }
 }

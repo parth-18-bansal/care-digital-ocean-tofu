@@ -1,8 +1,3 @@
-# provider
-do_token = ""
-spaces_access_key = ""
-spaces_secret_key = ""
-
 # database
 database_name = "demo-db"
 database_engine = "pg"

@@ -41,7 +41,7 @@ locals {
     },
     {
         key   = "BUCKET_REGION"
-        value = "blr1"
+        value = var.care_bucket_region
         type  = "GENERAL"   
     },
     {
@@ -85,7 +85,7 @@ locals {
         type  = "GENERAL"   
     },
     {
-        key   = "DISABLE_COLLECTSTATI"
+        key   = "DISABLE_COLLECTSTATIC"
         value = "1"
         type  = "GENERAL"   
     }
