@@ -9,14 +9,6 @@ module "postgresql" {
     cluster_size                 = var.database_size
     cluster_node_count           = var.database_node_count
     create_pools                 = false
-    # firewall_rules = [
-    #   {
-    #     type = "app"
-    #     value = digitalocean_app.backend_app.id
-    #   }
-    # ]
-
-    # depends_on = [ digitalocean_app.backend_app ]
 }
 
 resource "digitalocean_database_firewall" "firewall" {
