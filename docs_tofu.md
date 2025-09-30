@@ -691,6 +691,14 @@ lint:
 
 ```
 
+## step 13: Infrastructure
+
+In the terminal, just run the make
+
+```bash
+make
+```
+
 
 
 
