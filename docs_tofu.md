@@ -58,12 +58,38 @@ export AWS_SECRET_ACCESS_KEY="your-spaces-secret-key"
 ## step 2: write the provider.tf
 This file tell the opentofu to interact with the digital ocean cloud api. And also here we define the credentials for your account. So that open tofu can create resources in your account.
 
-<img width="1385" height="535" alt="image" src="https://github.com/user-attachments/assets/4d692512-b327-4af4-a649-7412952463e5" />
+```hcl
+terraform {
+  required_providers {
+    digitalocean = {
+      source  = "digitalocean/digitalocean"
+      version = "~> 2.0"
+    }
+  }
+}
+
+provider "digitalocean" {
+  spaces_access_id  = var.spaces_access_key
+  spaces_secret_key = var.spaces_secret_key
+}
+```
 
 ## step 3: write the init.tf
 This file defines where the tfstate file will get store for your infrastructure
 
-<img width="964" height="364" alt="image" src="https://github.com/user-attachments/assets/068eab6b-2aaa-4bbe-9d96-c586bd241086" />
+```hcl
+terraform {
+  backend "s3" {
+    bucket                      = "care-tofu-state"
+    key                         = "tfstate/terraform.tfstate"
+    region                      = "blr1"
+    endpoint                    = "https://blr1.digitaloceanspaces.com"
+    skip_credentials_validation = true
+    skip_region_validation      = true
+    force_path_style            = true
+  }
+}
+```
 
 ## step 4: create variable.tf and dev.tfvars files
 We define all the variables in the variables.tf file and store the values of these variables in the environments/dev.tfvars file.
@@ -72,36 +98,125 @@ We define all the variables in the variables.tf file and store the values of the
 - create the database.tf file
 - write the terraform script in it like this:
 
-  <img width="900" height="353" alt="image" src="https://github.com/user-attachments/assets/8ef82ff3-dd86-4bdd-9947-529749a1960b" />
+```hcl
+module "postgresql" {
+    source                       = "terraform-do-modules/database/digitalocean"
+    version                      = "1.0.0"
+    name                         = var.database_name
+    environment                  = "dev"
+    region                       = var.database_region
+    cluster_engine               = var.database_engine
+    cluster_version              = var.database_cluster_version
+    cluster_size                 = var.database_size
+    cluster_node_count           = var.database_node_count
+    create_pools                 = false
+}
+```
 
 - Then in variables.tf define the variables
 
-  <img width="1054" height="740" alt="image" src="https://github.com/user-attachments/assets/9e178db6-8413-405c-8465-d77f031b936a" />
+```hcl
+# database
+variable "database_name" {
+  description = "value"
+  type = string
+}
+
+variable "database_engine" {
+    description = "value"
+    type = string
+}
+
+variable "database_size" {
+    description = "value"
+    type = string
+}
+
+variable "database_region" {
+    description = "value"
+    type = string
+}
+
+variable "database_node_count" {
+    description = "value"
+    type = string
+}
+
+variable "database_cluster_version" {
+    description = ""
+    type = string
+}
+```
 
 - then in dev.tfvars define the values of them
 
-  <img width="716" height="177" alt="image" src="https://github.com/user-attachments/assets/a03c2959-e285-42c6-98b9-57da6c097a91" />
+```hcl
+# database
+database_name = "demo-db"
+database_engine = "pg"
+database_region = "blr1"
+database_size = "db-s-1vcpu-1gb"
+database_node_count = 1
+database_cluster_version = "16"
+```
 
 ## step 6: now we will define the spaces(bucket)
 - create the spaces.tf file
 - write the terraform script in it:
 
-<img width="901" height="258" alt="image" src="https://github.com/user-attachments/assets/11343954-de9c-4202-9f57-fb63cc092acc" />
+```hcl
+module "spaces" {
+    source        = "terraform-do-modules/spaces/digitalocean"
+    version       = "1.0.0"
+    name          = var.care_bucket_name
+    environment   = "dev"
+    acl           = "private"
+    force_destroy = false
+    region        = var.care_bucket_region
+}
+```
 
 - then in variables.tf define the variables related to it
 
-  <img width="529" height="381" alt="image" src="https://github.com/user-attachments/assets/0abd74b2-444c-4b14-a74f-9616b17bd05f" />
+```hcl
+# spaces
+variable "care_bucket_name" {
+    description = "value"
+    type = string
+}
+
+variable "care_bucket_region" {
+    description = "value"
+    type = string
+}
+
+variable "care_bucket_key_name" {
+    description = "value"
+    type = string
+}
+```
 
 - then in dev.tfvars file define the values of these variables
 
-  <img width="570" height="132" alt="image" src="https://github.com/user-attachments/assets/8b7c6ad1-6f67-4acd-b995-ece703986f20" />
-
+```hcl
+# bucket
+care_bucket_name = "demo-bucket"
+care_bucket_region = "blr1"
+care_bucket_key_name = "demo-bucket-key"
+```
 
 ## step 7: Cloudfront
 - create a cdn.tf file
 - write the terraform script for it:
 
-<img width="945" height="224" alt="image" src="https://github.com/user-attachments/assets/1ad8e444-af03-4748-85a9-4fbba50d6739" />
+```hcl
+module "cdn" {
+    source             = "terraform-do-modules/cdn/digitalocean"
+    version            = "1.0.0"
+    origin             = module.spaces.bucket_domain_name
+    ttl                = 3600
+}
+```
 
 This is the cloudfront for caching the data, we will put this in front of the bucket.
 
